@@ -45,3 +45,22 @@ int main(void) {
 	return 0;
 
 }
+
+/*
+
+Alternative Method:
+
+void vecAdd(float* A, float* B, float* C, N){
+
+int size = n* sizeof(float);
+float *d_A, *d_B, *d_C;
+
+//Part1: Allocated device memory to A, B, C
+//Copy A and B to device memory
+
+//Part 2: Call kernel, launching a grid of threads to perform vecAdd
+
+//Part 3: Copy C from the device memory then free device vectors
+
+}
+*/
