@@ -69,3 +69,34 @@ dim3 blockDim(blockSize);  // Threads in x-dimension
 dim3 gridDim(numBlocks);   // Blocks in x-dimension
 
 MatrixMulKernelColWise << <gridDim, blockDim >> > (M, N, P, Width);
+
+
+//Exericse 1.C: What are the pro/cons of Col-wise and Row-wise?
+/*
+--Row_wise--
+P:
+	More memory efficient as threads in a warp/group would be accessing consecutive memory locations (speed) -- coalesced memory
+		Row access for M but not for N so memory inefficient for that matrix (Stride access and thus non-coalesced)
+	Row-wise is generally how most things are laid out (conceptually easier for me at least haha)
+C:
+	Non-coalesced for N, and divergence of work efforts depending on how elements are laid out in a matrix, some threads may do more work than others!
+--Col_wise--
+P:
+	Memory eff for N (col-wise) but not for M (row-wise)
+	Wide v tall matrices
+C:
+	Uneven work/thread divergence (like Row_wise).
+
+
+*/
+
+//Exercise 2:
+/*
+
+A matmul takes an input mat B and vector C and produces one output vector A,
+Each element of the output vector A is the dot product of one row of the input mat B and C that is A[i]= EjB[i][j] + C[j]
+We'll only handle square matrices 
+Write a kernel with four params: point to the out mat, pointer to the in mat, point to the in vec and number of elements in each dim
+	Use one thread to calculate an output vector element
+
+*/
