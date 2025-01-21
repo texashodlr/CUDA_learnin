@@ -100,3 +100,72 @@ Write a kernel with four params: point to the out mat, pointer to the in mat, po
 	Use one thread to calculate an output vector element
 
 */
+void MatVecMulKernel(float* OUT, float* IN_M, float* IN_V, int N) {
+	int row = blockIdx.y * blockDim.y + threadIdx.y;
+	
+	if (row < N){
+		float Pvalue = 0;
+		for (int k = 0; k < N; ++k) {
+			Pvalue += IN_M[row * N + k] * IN_V[k];
+		}
+	OUT[row] = Pvalue;
+	}
+}
+
+//Exercise 3:
+/*
+
+Consider this cuda kernel
+
+__global__
+void foo_kernel(float* a, float* b, unsigned int M, unsigned int N){
+	unsigned int row = blockIdx.y*blockDim.y+threadIdx.y;
+	unsigned int col = blockIdx.x*blockDim.x+threadIdx.x;
+	if( row < M && col < N){
+		b[row*N + col] = a[row*N+col]/2.1f + 4.8f;
+	}
+}
+
+void foo(float* a_d, float* b_d){
+	unsigned int M = 150;
+	unsigned int N = 300;
+	dim3 bd(16, 32);
+	dim3 gd((N-1)/16 + 1, (M-1)/32 + 1);
+	foo_kernel<<<gd, bd>>>(a_d, b_d, M, N);
+}
+
+\\\Questions///
+1. Threads per Block?
+	.X = 16 & .y = 32 so 16*32 = 512 threads per block
+2. Number of threads in the grid?
+	grid.x = (300-1)/16 + 1 == 19 -- 20
+	grid.y = (150-1)/32 + 1 == 5 -- 6
+	19 * 5 = 95 Blocks * 512 = 48640
+	so 20*6 = 120 Blocks, 120*512 = 61,440 Threads in the grid
+3. Number of blocks in the grid?
+	120
+4. Number of threads that execute code on line 5?
+	Line 5: b[row*N + col] = a[row*N+col]/2.1f + 4.8f;
+	..Well.. Line 5 is gatekept by: if( row < M && col < N) and M == 150, N=300 and 150*300 = 45K!
+
+*/
+
+//Exercise 4:
+/*
+
+W = 400, H = 500, (200K elements) specifiy the array index of the element at row 20 and col 10.
+A. In row-major order: M[20*400+10] == 8010th element
+B. In Col-major order: M[20+10*500] == 5020th element
+
+*/
+
+//Exercise 5:
+/*
+
+3D Tensor now, W=400, H=500, D=300, laying it out as a 1D array in row-major order whats the index of X=10 y=20, Z=5? (Row 20, Col 10, Depth 5
+60M elements
+
+P[plane*m*n+row*m+col]
+
+P[5*400*500+20*400+10] = 1,008,010th element
+*/
